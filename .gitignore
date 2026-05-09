@@ -1,0 +1,65 @@
+# =========================
+# macOS
+# =========================
+.DS_Store
+
+# =========================
+# Python / Django
+# =========================
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Django static/media
+staticfiles/
+media/
+
+# Pytest / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Node / Next.js
+# =========================
+node_modules/
+.next/
+out/
+dist/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Docker
+# =========================
+postgres_data/
+
+# =========================
+# Misc
+# =========================
+coverage/
+tmp/
