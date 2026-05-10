@@ -29,9 +29,37 @@ export async function apiClient<T>(
     },
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("API request failed");
+    let errorMessage = "API request failed";
+
+    if (data.detail) {
+      errorMessage = data.detail;
+    } else if (
+      data.non_field_errors?.length
+    ) {
+      errorMessage = data.non_field_errors[0];
+    } else {
+      const firstKey = Object.keys(data)[0];
+      const firstValue = data[firstKey];
+
+      if (
+        Array.isArray(firstValue) &&
+        firstValue.length
+      ) {
+        errorMessage = firstValue[0];
+      }
+    }
+
+    const apiError = new Error(
+      errorMessage,
+    );
+
+    apiError.name = "ApiError";
+
+    throw apiError;
   }
 
-  return response.json() as Promise<T>;
+  return data as T;
 }

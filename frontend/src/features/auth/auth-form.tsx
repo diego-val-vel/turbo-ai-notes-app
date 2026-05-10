@@ -40,20 +40,30 @@ export function AuthForm({
 
       const response = isLogin
         ? await login({
-            email,
-            password,
-          })
+          email,
+          password,
+        })
         : await signUp({
-            email,
-            password,
-          });
+          email,
+          password,
+        });
 
       saveSession(response.tokens);
 
       router.push("/notes");
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.name === "ApiError"
+      ) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      console.error(error);
+
       setErrorMessage(
-        "Authentication failed. Please try again.",
+        "Unexpected error. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
