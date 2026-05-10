@@ -17,13 +17,14 @@ export async function getNotes(): Promise<Note[]> {
   });
 }
 
-export async function createNote(): Promise<Note> {
-  return apiClient<Note>("/notes/", {
+export async function createNote(
+  categoryId: string,
+): Promise<Note> {
+  return apiClient<Note>("/notes/create/", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
-      title: "",
-      content: "",
+      category_id: categoryId,
     }),
   });
 }
@@ -47,7 +48,7 @@ export async function updateNote(
   noteId: string,
   payload: UpdateNotePayload,
 ): Promise<Note> {
-  return apiClient<Note>(`/notes/${noteId}/`, {
+  return apiClient<Note>(`/notes/${noteId}/update/`, {
     method: "PATCH",
     headers: authHeaders(),
     body: JSON.stringify(payload),

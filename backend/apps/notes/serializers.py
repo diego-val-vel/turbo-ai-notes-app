@@ -3,15 +3,14 @@ from apps.categories.models import Category
 from apps.notes.models import Note
 
 class NoteSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(
-        source="category.get_name_display",
-        read_only=True,
-    )
+    category = serializers.SerializerMethodField()
 
-    category_color = serializers.CharField(
-        source="category.color",
-        read_only=True,
-    )
+    def get_category(self, obj):
+        return {
+            "id": str(obj.category.id),
+            "name": obj.category.get_name_display(),
+            "color": obj.category.color,
+        }
 
     class Meta:
         model = Note
@@ -21,8 +20,6 @@ class NoteSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "category",
-            "category_name",
-            "category_color",
             "created_at",
             "updated_at",
         )

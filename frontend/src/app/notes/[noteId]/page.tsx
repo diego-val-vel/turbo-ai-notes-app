@@ -5,8 +5,13 @@ import {
   useEffect,
   useState,
 } from "react";
+
 import Link from "next/link";
-import { useParams } from "next/navigation";
+
+import {
+  useParams,
+  useRouter,
+} from "next/navigation";
 
 import {
   getNote,
@@ -15,11 +20,18 @@ import {
 
 import { getCategories } from "@/features/categories/api";
 import { formatNoteDate } from "@/lib/utils/date";
+
+import {
+  clearSession,
+  isAuthenticated,
+} from "@/features/auth/session";
+
 import type { Note } from "@/types/note";
 import type { Category } from "@/types/category";
 
 export default function NoteEditorPage() {
   const params = useParams();
+  const router = useRouter();
   const noteId = params.noteId as string;
   const [note, setNote] = useState<Note | null>(null);
   const [title, setTitle] = useState("");
@@ -27,6 +39,13 @@ export default function NoteEditorPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [isReadyToAutosave, setIsReadyToAutosave] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      router.replace("/login");
+    }
+  }, [router]);
 
   useEffect(() => {
     async function loadNote() {
@@ -49,15 +68,19 @@ export default function NoteEditorPage() {
         setIsReadyToAutosave(true);
       } catch (error) {
         console.error(error);
+        clearSession();
+        router.replace("/login");
       }
     }
 
     loadNote();
-  }, [noteId]);
+  }, [noteId, router]);
 
   const saveNote = useCallback(
     async function saveNote() {
       try {
+        setSaveStatus("saving");
+
         const updatedNote =
           await updateNote(noteId, {
             title,
@@ -67,8 +90,11 @@ export default function NoteEditorPage() {
           });
 
         setNote(updatedNote);
+
+        setSaveStatus("saved");
       } catch (error) {
         console.error(error);
+        setSaveStatus("error");
       }
     },
     [
@@ -80,10 +106,7 @@ export default function NoteEditorPage() {
   );
 
   useEffect(() => {
-    if (
-      !note ||
-      !isReadyToAutosave
-    ) {
+    if (!isReadyToAutosave) {
       return;
     }
 
@@ -93,10 +116,21 @@ export default function NoteEditorPage() {
 
     return () => clearTimeout(timeout);
   }, [
-    note,
     isReadyToAutosave,
     saveNote,
   ]);
+
+  useEffect(() => {
+    if (saveStatus !== "saved") {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSaveStatus("idle");
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }, [saveStatus]);
 
   if (!note) {
     return (
@@ -125,12 +159,32 @@ export default function NoteEditorPage() {
       <div className="mx-auto max-w-4xl rounded-[32px] bg-white p-10 shadow-sm">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <p className="text-sm text-neutral-400">
-              Last edited{" "}
-              {formatNoteDate(
-                note.updated_at,
+            <div className="space-y-1">
+              <p className="text-sm text-neutral-400">
+                Last edited{" "}
+                {formatNoteDate(
+                  note.updated_at,
+                )}
+              </p>
+
+              {saveStatus === "saving" && (
+                <p className="text-sm text-amber-500">
+                  Saving...
+                </p>
               )}
-            </p>
+
+              {saveStatus === "saved" && (
+                <p className="text-sm text-emerald-600">
+                  Saved
+                </p>
+              )}
+
+              {saveStatus === "error" && (
+                <p className="text-sm text-red-500">
+                  Error saving note
+                </p>
+              )}
+            </div>
           </div>
 
           <Link

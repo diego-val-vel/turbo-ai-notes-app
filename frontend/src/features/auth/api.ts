@@ -19,10 +19,11 @@ type SignUpPayload = {
 export async function login(
   payload: LoginPayload,
 ): Promise<AuthResponse> {
-  return apiClient<AuthResponse>("/auth/login/", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+return apiClient<AuthResponse>("/auth/login/", {
+  method: "POST",
+  auth: false,
+  body: JSON.stringify(payload),
+});
 }
 
 export async function signUp(
@@ -30,6 +31,7 @@ export async function signUp(
 ): Promise<AuthResponse> {
   return apiClient<AuthResponse>("/auth/signup/", {
     method: "POST",
+    auth: false,
     body: JSON.stringify(payload),
   });
 }

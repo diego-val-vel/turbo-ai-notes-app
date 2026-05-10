@@ -1,4 +1,8 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { CategorySidebar } from "@/features/categories/category-sidebar";
+import { clearSession } from "@/features/auth/session";
 import type { Category } from "@/types/category";
 import type { Note } from "@/types/note";
 
@@ -23,6 +27,14 @@ export function AppShell({
   selectedCategoryId,
   onSelectCategory,
 }: AppShellProps) {
+  const router = useRouter();
+
+  function handleLogout() {
+    clearSession();
+
+    router.replace("/login");
+  }
+
   return (
     <main className="min-h-screen bg-[#FDF7F1]">
       <div className="mx-auto flex min-h-screen max-w-[1440px]">
@@ -37,16 +49,25 @@ export function AppShell({
             </p>
           </div>
 
-          <CategorySidebar
-            categories={categories}
-            notes={notes}
-            selectedCategoryId={
-              selectedCategoryId
-            }
-            onSelectCategory={
-              onSelectCategory
-            }
-          />
+          <div className="flex h-[calc(100vh-160px)] flex-col justify-between">
+            <CategorySidebar
+              categories={categories}
+              notes={notes}
+              selectedCategoryId={
+                selectedCategoryId
+              }
+              onSelectCategory={
+                onSelectCategory
+              }
+            />
+
+            <button
+              onClick={handleLogout}
+              className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-left text-sm font-medium text-neutral-700 transition hover:border-neutral-300"
+            >
+              Logout
+            </button>
+          </div>
         </aside>
 
         <section className="flex-1 p-8">

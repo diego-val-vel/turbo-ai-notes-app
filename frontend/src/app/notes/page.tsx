@@ -86,7 +86,16 @@ export default function NotesPage() {
             <button
               onClick={async () => {
                 try {
-                  const note = await createNote();
+                  if (categories.length === 0) {
+                    return;
+                  }
+
+                  const defaultCategory =
+                    categories[0];
+
+                  const note = await createNote(
+                    defaultCategory.id,
+                  );
 
                   router.push(`/notes/${note.id}`);
                 } catch (error) {
