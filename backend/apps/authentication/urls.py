@@ -7,6 +7,8 @@ from apps.authentication.views import (
     SignupAPIView,
 )
 
+app_name = "authentication"
+
 urlpatterns = [
     path(
         "signup/",

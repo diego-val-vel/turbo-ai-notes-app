@@ -72,6 +72,7 @@ class NoteUpdateAPIView(APIView):
     def patch(self, request, note_id):
         serializer = UpdateNoteSerializer(
             data=request.data,
+            partial=True,
         )
 
         serializer.is_valid(
@@ -83,15 +84,24 @@ class NoteUpdateAPIView(APIView):
             note_id=note_id,
         )
 
-        category = Category.objects.get(
-            id=serializer.validated_data["category_id"],
-        )
+        category = None
+
+        if "category_id" in serializer.validated_data:
+            category = Category.objects.get(
+                id=serializer.validated_data["category_id"],
+            )
 
         updated_note = update_note(
             note=note,
-            title=serializer.validated_data["title"],
-            content=serializer.validated_data["content"],
-            category=category,
+            title=serializer.validated_data.get(
+                "title",
+                note.title,
+            ),
+            content=serializer.validated_data.get(
+                "content",
+                note.content,
+            ),
+            category=category or note.category,
         )
 
         return response.Response(

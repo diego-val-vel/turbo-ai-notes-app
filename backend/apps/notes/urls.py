@@ -7,28 +7,30 @@ from apps.notes.views import (
     NoteUpdateAPIView,
 )
 
+app_name = "notes"
+
 urlpatterns = [
     path(
         "",
         NoteListAPIView.as_view(),
-        name="note-list",
+        name="list",
     ),
 
     path(
         "create/",
         NoteCreateAPIView.as_view(),
-        name="note-create",
+        name="create",
     ),
 
     path(
         "<uuid:note_id>/",
         NoteDetailAPIView.as_view(),
-        name="note-detail",
+        name="detail",
     ),
 
     path(
         "<uuid:note_id>/update/",
         NoteUpdateAPIView.as_view(),
-        name="note-update",
+        name="update",
     ),
 ]
