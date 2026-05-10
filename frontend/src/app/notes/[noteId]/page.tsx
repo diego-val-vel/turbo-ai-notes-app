@@ -39,6 +39,7 @@ export default function NoteEditorPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [isReadyToAutosave, setIsReadyToAutosave] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function NoteEditorPage() {
           });
 
         setNote(updatedNote);
-
+        setHasUnsavedChanges(false);
         setSaveStatus("saved");
       } catch (error) {
         console.error(error);
@@ -106,7 +107,10 @@ export default function NoteEditorPage() {
   );
 
   useEffect(() => {
-    if (!isReadyToAutosave) {
+    if (
+      !isReadyToAutosave ||
+      !hasUnsavedChanges
+    ) {
       return;
     }
 
@@ -117,6 +121,7 @@ export default function NoteEditorPage() {
     return () => clearTimeout(timeout);
   }, [
     isReadyToAutosave,
+    hasUnsavedChanges,
     saveNote,
   ]);
 
@@ -197,20 +202,22 @@ export default function NoteEditorPage() {
 
         <input
           value={title}
-          onChange={(event) =>
-            setTitle(event.target.value)
-          }
+          onChange={(event) => {
+            setTitle(event.target.value);
+            setHasUnsavedChanges(true);
+          }}
           placeholder="Note title"
           className="w-full border-none bg-transparent text-4xl font-semibold text-neutral-900 outline-none"
         />
 
         <select
           value={selectedCategoryId}
-          onChange={(event) =>
+          onChange={(event) => {
             setSelectedCategoryId(
               event.target.value,
-            )
-          }
+            );
+            setHasUnsavedChanges(true);
+          }}
           className="mt-6 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm font-medium text-neutral-700 outline-none"
         >
           {categories.map((category) => (
@@ -225,9 +232,10 @@ export default function NoteEditorPage() {
 
         <textarea
           value={content}
-          onChange={(event) =>
-            setContent(event.target.value)
-          }
+          onChange={(event) => {
+            setContent(event.target.value);
+            setHasUnsavedChanges(true);
+          }}
           placeholder="Start typing..."
           className="mt-8 min-h-[400px] w-full resize-none border-none bg-transparent text-lg leading-8 text-neutral-600 outline-none"
         />

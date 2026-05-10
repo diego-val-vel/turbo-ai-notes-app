@@ -2,34 +2,34 @@ export function formatNoteDate(
   dateString: string,
 ) {
   const date = new Date(dateString);
-
   const now = new Date();
 
-  const diffInMs =
-    now.getTime() - date.getTime();
-
-  const diffInHours = Math.floor(
-    diffInMs / (1000 * 60 * 60),
+  const today = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
   );
+
+  const targetDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+
+  const diffInMs =
+    today.getTime() -
+    targetDate.getTime();
 
   const diffInDays = Math.floor(
-    diffInHours / 24,
+    diffInMs / (1000 * 60 * 60 * 24),
   );
 
-  if (diffInHours < 1) {
-    return "Just now";
-  }
-
-  if (diffInHours < 24) {
-    return `${diffInHours}h ago`;
+  if (diffInDays === 0) {
+    return "Today";
   }
 
   if (diffInDays === 1) {
     return "Yesterday";
-  }
-
-  if (diffInDays < 7) {
-    return `${diffInDays}d ago`;
   }
 
   return date.toLocaleDateString(
