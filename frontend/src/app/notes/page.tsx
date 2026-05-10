@@ -37,9 +37,8 @@ export default function NotesPage() {
             getNotes(),
           ]);
 
-        setCategories(categoriesResponse);
-
-        setNotes(notesResponse);
+        setCategories(Array.isArray(categoriesResponse) ? categoriesResponse : []);
+        setNotes(Array.isArray(notesResponse) ? notesResponse : []);
       } catch (error) {
         console.error(error);
       }
