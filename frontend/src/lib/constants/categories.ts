@@ -1,0 +1,5 @@
+export const CATEGORY_COLORS = {
+  RANDOM_THOUGHTS: "#F4C7A1",
+  SCHOOL: "#F6E1A7",
+  PERSONAL: "#B8D4D0",
+} as const;
